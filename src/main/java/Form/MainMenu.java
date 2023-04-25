@@ -10,6 +10,7 @@ import com.sun.media.sound.InvalidFormatException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,6 +25,9 @@ import javax.swing.RowFilter;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -39,12 +43,12 @@ public class MainMenu extends javax.swing.JFrame {
      private DefaultTableModel model;
      String file_path = "";
      
-    public MainMenu() {
+    public MainMenu() throws IOException {
         initComponents();
         String os = System.getProperty("os.name");
         if (os.contains("Windows")) {
             // Windows
-            file_path = "D:\\";
+            file_path = "D:\\enfants.xlsx";
         } else if (os.contains("Mac")) {
             // Mac
         }
@@ -86,6 +90,8 @@ public class MainMenu extends javax.swing.JFrame {
                 enfant.setNum_pere(resultat.getString("num_pere"));
                 list.add(enfant);
             }
+            
+            ecrireListeExcel(list,file_path);
             
             for(int i=0 ; i< list.size(); i++)
             { 
@@ -478,6 +484,64 @@ public class MainMenu extends javax.swing.JFrame {
         }
     }
     
+    public void ecrireListeExcel(List<Enfant> valeurs, String nomFichier) throws IOException {
+    // Créer un nouveau fichier Excel
+    XSSFWorkbook classeur = new XSSFWorkbook();
+    
+    // Créer une feuille dans le fichier Excel
+    XSSFSheet feuille = classeur.createSheet("Enfants");
+    
+    // Créer une ligne pour les en-têtes de colonnes
+    XSSFRow entetes = feuille.createRow(0);
+    entetes.createCell(0).setCellValue("Num");
+    entetes.createCell(1).setCellValue("Num_Contrat");
+    entetes.createCell(2).setCellValue("Nom");
+    entetes.createCell(3).setCellValue("Prenom");
+    entetes.createCell(4).setCellValue("Date_Naissance");
+    entetes.createCell(5).setCellValue("Date_Entree");
+    entetes.createCell(6).setCellValue("Date_Sortie");
+    entetes.createCell(7).setCellValue("Lundi_AM");
+    entetes.createCell(8).setCellValue("Lundi_PM");
+    entetes.createCell(9).setCellValue("Mardi_AM");
+    entetes.createCell(10).setCellValue("Mardi_PM");
+    entetes.createCell(11).setCellValue("Mercredi_AM");
+    entetes.createCell(12).setCellValue("Mercredi_PM");
+    entetes.createCell(13).setCellValue("Jeudi_AM");
+    entetes.createCell(14).setCellValue("Jeudi_PM");
+    entetes.createCell(15).setCellValue("Vendredi_AM");
+    entetes.createCell(16).setCellValue("Vendredi_PM");
+    
+    // Écrire les informations de chaque enfant dans une ligne différente
+    for (int i = 0; i < valeurs.size(); i++) {
+        Enfant enfant = valeurs.get(i);
+        XSSFRow ligne = feuille.createRow(i + 1);
+        ligne.createCell(0).setCellValue(enfant.getNum());
+        ligne.createCell(1).setCellValue(enfant.getNum_contrat());
+        ligne.createCell(2).setCellValue(enfant.getNom());
+        ligne.createCell(3).setCellValue(enfant.getPrenom());
+        ligne.createCell(4).setCellValue(enfant.getDate_naissance());
+        ligne.createCell(5).setCellValue(enfant.getDate_entree());
+        ligne.createCell(6).setCellValue(enfant.getDate_sortie());
+        ligne.createCell(7).setCellValue(enfant.getLundi_am());
+        ligne.createCell(8).setCellValue(enfant.getLundi_pm());
+        ligne.createCell(9).setCellValue(enfant.getMardi_am());
+        ligne.createCell(10).setCellValue(enfant.getMardi_pm());
+        ligne.createCell(11).setCellValue(enfant.getMercredi_am());
+        ligne.createCell(12).setCellValue(enfant.getMercredi_pm());
+        ligne.createCell(13).setCellValue(enfant.getJeudi_am());
+        ligne.createCell(14).setCellValue(enfant.getJeudi_pm());
+        ligne.createCell(15).setCellValue(enfant.getVendredi_am());
+        ligne.createCell(16).setCellValue(enfant.getVendredi_pm());
+        
+    }
+    
+    // Enregistrer le fichier Excel
+    FileOutputStream fichier = new FileOutputStream(nomFichier);
+    classeur.write(fichier);
+    fichier.close();
+}
+    
+  
     public void search(String s) {
         TableRowSorter<DefaultTableModel> trs = new TableRowSorter <>(model);
         jTable1.setRowSorter(trs);
@@ -514,7 +578,11 @@ public class MainMenu extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainMenu().setVisible(true);
+                try {
+                    new MainMenu().setVisible(true);
+                } catch (IOException ex) {
+                    Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
     }
