@@ -5,6 +5,7 @@
 package Form;
 
 import Entities.Enfant;
+import Entities.Mois;
 import Utile.BeanBDAccess;
 import com.sun.media.sound.InvalidFormatException;
 import java.io.File;
@@ -17,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,22 +43,25 @@ public class MainMenu extends javax.swing.JFrame {
      private BeanBDAccess bd;
      private ResultSet resultat;
      private DefaultTableModel model;
+     private DefaultTableModel modelMois;
      String file_path = "";
+     List<Enfant> list = new ArrayList<Enfant>();
      
     public MainMenu() throws IOException {
         initComponents();
         String os = System.getProperty("os.name");
         if (os.contains("Windows")) {
             // Windows
-            file_path = "D:\\enfants.xlsx";
+            file_path = "C:\\Temp\\enfants.xlsx";
         } else if (os.contains("Mac")) {
             // Mac
         }
+        jTable1.getTableHeader().setOpaque(false);
         model = (DefaultTableModel)jTable1.getModel();
-        bd = new BeanBDAccess();
-        bd.connectBD("jdbc:mysql://localhost:3306/bd_creche?serverTimezone=UTC","root","gaetan");
-        List<Enfant> list = new ArrayList<Enfant>();
-         
+        modelMois = (DefaultTableModel)jTable2.getModel();
+        
+        list = readFile(file_path);
+         /*
         resultat = bd.SelectBD("select * from enfant;");
         try {
             while(resultat.next())
@@ -90,8 +95,8 @@ public class MainMenu extends javax.swing.JFrame {
                 enfant.setNum_pere(resultat.getString("num_pere"));
                 list.add(enfant);
             }
-            
-            ecrireListeExcel(list,file_path);
+            */
+            //ecrireListeExcel(list,file_path);
             
             for(int i=0 ; i< list.size(); i++)
             { 
@@ -129,13 +134,7 @@ public class MainMenu extends javax.swing.JFrame {
                 }
                 model.addRow(vector);   
             } 
-        } catch (SQLException ex) {
-            System.out.println("Exception dans findAll");
-        }
-        
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println("enfant " + list.get(i));
-        }
+  
     }
 
     /**
@@ -169,6 +168,7 @@ public class MainMenu extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(1700, 900));
 
+        jTabbedPane1.setBackground(new java.awt.Color(255, 255, 255));
         jTabbedPane1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
@@ -184,6 +184,11 @@ public class MainMenu extends javax.swing.JFrame {
         ));
         jTable1.setAlignmentX(1.5F);
         jTable1.setAlignmentY(1.5F);
+        jTable1.setFocusable(false);
+        jTable1.setRowHeight(30);
+        jTable1.setSelectionBackground(new java.awt.Color(0, 120, 211));
+        jTable1.setSelectionForeground(new java.awt.Color(255, 255, 255));
+        jTable1.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(jTable1);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 22)); // NOI18N
@@ -271,6 +276,10 @@ public class MainMenu extends javax.swing.JFrame {
                 "Lundi-AM", "Lundi-PM", "Mardi-AM", "Mardi-PM", "Mercredi-AM", "Mercredi-PM", "Jeudi-AM", "Jeudi-PM", "Vendredi-AM", "Vendredi-PM"
             }
         ));
+        jTable2.setGridColor(new java.awt.Color(255, 255, 255));
+        jTable2.setRowHeight(30);
+        jTable2.setSelectionBackground(new java.awt.Color(51, 153, 255));
+        jTable2.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(jTable2);
 
         jButton3.setText("Recherche");
@@ -308,10 +317,10 @@ public class MainMenu extends javax.swing.JFrame {
                     .addComponent(jButton3))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 753, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("tab2", jPanel3);
+        jTabbedPane1.addTab("Mois", jPanel3);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -321,7 +330,7 @@ public class MainMenu extends javax.swing.JFrame {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -361,7 +370,7 @@ public class MainMenu extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
             // TODO add your handling code here:
-            parseFileMonth(file_path+"mois-"+jTextField2.getText()+".xlsx");
+            parseFileMonth("C:\\Temp\\"+"mois-"+jTextField2.getText()+".xlsx");
 
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Fichier introuvable", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -375,6 +384,9 @@ public class MainMenu extends javax.swing.JFrame {
     
     public void parseFileMonth(String filePath) throws FileNotFoundException, InvalidFormatException, org.apache.poi.openxml4j.exceptions.InvalidFormatException {
         try {
+            List<Mois> listMois = new ArrayList<Mois>();
+            Mois janvier = new Mois();
+            Mois fevrier = new Mois();
             //Création d'un objet FileInputStream pour lire le fichier
             FileInputStream fis = new FileInputStream(new File(filePath));
 
@@ -387,158 +399,212 @@ public class MainMenu extends javax.swing.JFrame {
             rows.next();
             //Parcours des lignes de la feuille
             while (rows.hasNext()) {
+                
                 Row row = rows.next();
                 System.out.println("row" + row.getCell(0)); 
-                if(row.getCell(2).getNumericCellValue() == 1) {
-                    System.out.println("janvier ok");
+                Double d = row.getCell(0).getNumericCellValue();
+                Enfant enfant = rechercheParId(list, Double.toString(d));
+                
+                if(row.getCell(1).getNumericCellValue() == 1) {      
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en janvier");
-                }
+                    janvier.setMois("Janvier");
+                    System.out.println("Enfant : " + enfant);
+                    janvier = compterJour(enfant,janvier);     
+                    
+                } 
+                
+                if(row.getCell(2).getNumericCellValue() == 1) {
+                    fevrier.setMois("Février");
+                    fevrier = compterJour(enfant,fevrier);
+                    //recherche dans autre fichier
+                } 
                 
                 if(row.getCell(3).getNumericCellValue() == 1) {
-                    System.out.println("fev ok");
+                  
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en fev");
                 }
                 
                 if(row.getCell(4).getNumericCellValue() == 1) {
-                    System.out.println("mars ok");
+                 
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en mars");
-                }
+                } 
                 
                 if(row.getCell(5).getNumericCellValue() == 1) {
-                    System.out.println("janvier avril");
+                
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en avril");
-                }
+                } 
                 
                 if(row.getCell(6).getNumericCellValue() == 1) {
-                    System.out.println("mai ok");
+                   
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en mai");
-                }
+                } 
                 
                 if(row.getCell(7).getNumericCellValue() == 1) {
-                    System.out.println("juin ok");
+                   
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en juin");
-                }
+                } 
                 
                 if(row.getCell(8).getNumericCellValue() == 1) {
-                    System.out.println("juillet ok");
+                   
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en juillet");
-                }
+                } 
                 
                 if(row.getCell(9).getNumericCellValue() == 1) {
-                    System.out.println("aout ok");
+                  
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en aout");
-                }
+                } 
                 
                 if(row.getCell(10).getNumericCellValue() == 1) {
-                    System.out.println("sept ok");
+                   
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en sept");
-                }
+                } 
                 
                 if(row.getCell(11).getNumericCellValue() == 1) {
-                    System.out.println("oct ok");
+                   
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en oct");
                 }
                 
                 if(row.getCell(12).getNumericCellValue() == 1) {
-                    System.out.println("nov ok");
                     //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en nov");
-                }
-                
-                if(row.getCell(13).getNumericCellValue() == 1) {
-                    System.out.println("dec ok");
-                    //recherche dans autre fichier
-                } else {
-                    System.out.println("viens pas en dec");
-                }
-                
+                } 
             }
+            listMois.add(janvier);
+            listMois.add(fevrier); 
+ 
+            for(int i=0 ; i< listMois.size(); i++)
+            { 
+                Mois m = (Mois) listMois.get(i);
+                System.out.println("mois : " + m);
+                Vector vector = new Vector<>();
+                
+                vector.add(m.getMois());
+                vector.add(m.getLundi_AM());
+                vector.add(m.getLundi_PM());
+                vector.add(m.getMardi_AM());
+                vector.add(m.getMardi_PM());
+                vector.add(m.getMercredi_AM());
+                vector.add(m.getMercredi_PM());
+                vector.add(m.getJeudi_AM());
+                vector.add(m.getJeudi_PM());
+                vector.add(m.getVendredi_AM());
+                vector.add(m.getVendredi_PM());
+                modelMois.addRow(vector);  
+            } 
             //Fermeture de l'objet Workbook
             workbook.close();
-
             //Fermeture de l'objet FileInputStream
             fis.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
+    
+    public List<Enfant> readFile(String path) throws FileNotFoundException {
+        
+        File file = new File(path);
+        FileInputStream fis = new FileInputStream(file);
+        try (XSSFWorkbook wb = new XSSFWorkbook(fis)) {
+            XSSFSheet sheet = wb.getSheetAt(0);
+
+            Iterator<Row> rows = sheet.iterator();
+            rows.next();
+            while (rows.hasNext()) {
+                Row row = rows.next();
+                Enfant e = new Enfant();
+                double d = row.getCell(0).getNumericCellValue();
+                e.setNum( Double.toString(d));
+                e.setNum_contrat(row.getCell(1).getStringCellValue());
+                e.setNom(row.getCell(2).getStringCellValue());
+                e.setPrenom(row.getCell(3).getStringCellValue());
+                //e.setDate_naissance(row.getCell(4).getStringCellValue());
+                /*e.setDate_entree(row.getCell(5).getStringCellValue());
+                e.setDate_sortie(row.getCell(6).getStringCellValue());*/
+                e.setLundi_am((int)(row.getCell(7).getNumericCellValue()));
+                e.setLundi_pm((int)(row.getCell(8).getNumericCellValue()));
+                e.setMardi_am((int)(row.getCell(9).getNumericCellValue()));
+                e.setMardi_pm((int)(row.getCell(10).getNumericCellValue()));
+                e.setMercredi_pm((int)(row.getCell(11).getNumericCellValue()));
+                e.setMercredi_pm((int)(row.getCell(12).getNumericCellValue()));
+                list.add(e);
+            }
+            
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+        return list;
+    }
+    
+    public static Enfant rechercheParId(List<Enfant> enfants, String id) {
+        Enfant findEnfant = new Enfant();
+        Optional<Enfant> e = enfants.stream()
+            .filter(enfant -> enfant.getNum().equals(id))
+            .findFirst();
+            
+            if(e.isPresent()) {
+                findEnfant = e.get();
+            }
+        return findEnfant;
+}
     
     public void ecrireListeExcel(List<Enfant> valeurs, String nomFichier) throws IOException {
-    // Créer un nouveau fichier Excel
-    XSSFWorkbook classeur = new XSSFWorkbook();
-    
-    // Créer une feuille dans le fichier Excel
-    XSSFSheet feuille = classeur.createSheet("Enfants");
-    
-    // Créer une ligne pour les en-têtes de colonnes
-    XSSFRow entetes = feuille.createRow(0);
-    entetes.createCell(0).setCellValue("Num");
-    entetes.createCell(1).setCellValue("Num_Contrat");
-    entetes.createCell(2).setCellValue("Nom");
-    entetes.createCell(3).setCellValue("Prenom");
-    entetes.createCell(4).setCellValue("Date_Naissance");
-    entetes.createCell(5).setCellValue("Date_Entree");
-    entetes.createCell(6).setCellValue("Date_Sortie");
-    entetes.createCell(7).setCellValue("Lundi_AM");
-    entetes.createCell(8).setCellValue("Lundi_PM");
-    entetes.createCell(9).setCellValue("Mardi_AM");
-    entetes.createCell(10).setCellValue("Mardi_PM");
-    entetes.createCell(11).setCellValue("Mercredi_AM");
-    entetes.createCell(12).setCellValue("Mercredi_PM");
-    entetes.createCell(13).setCellValue("Jeudi_AM");
-    entetes.createCell(14).setCellValue("Jeudi_PM");
-    entetes.createCell(15).setCellValue("Vendredi_AM");
-    entetes.createCell(16).setCellValue("Vendredi_PM");
-    
-    // Écrire les informations de chaque enfant dans une ligne différente
-    for (int i = 0; i < valeurs.size(); i++) {
-        Enfant enfant = valeurs.get(i);
-        XSSFRow ligne = feuille.createRow(i + 1);
-        ligne.createCell(0).setCellValue(enfant.getNum());
-        ligne.createCell(1).setCellValue(enfant.getNum_contrat());
-        ligne.createCell(2).setCellValue(enfant.getNom());
-        ligne.createCell(3).setCellValue(enfant.getPrenom());
-        ligne.createCell(4).setCellValue(enfant.getDate_naissance());
-        ligne.createCell(5).setCellValue(enfant.getDate_entree());
-        ligne.createCell(6).setCellValue(enfant.getDate_sortie());
-        ligne.createCell(7).setCellValue(enfant.getLundi_am());
-        ligne.createCell(8).setCellValue(enfant.getLundi_pm());
-        ligne.createCell(9).setCellValue(enfant.getMardi_am());
-        ligne.createCell(10).setCellValue(enfant.getMardi_pm());
-        ligne.createCell(11).setCellValue(enfant.getMercredi_am());
-        ligne.createCell(12).setCellValue(enfant.getMercredi_pm());
-        ligne.createCell(13).setCellValue(enfant.getJeudi_am());
-        ligne.createCell(14).setCellValue(enfant.getJeudi_pm());
-        ligne.createCell(15).setCellValue(enfant.getVendredi_am());
-        ligne.createCell(16).setCellValue(enfant.getVendredi_pm());
-        
-    }
-    
-    // Enregistrer le fichier Excel
-    FileOutputStream fichier = new FileOutputStream(nomFichier);
-    classeur.write(fichier);
-    fichier.close();
+        // Créer un nouveau fichier Excel
+        XSSFWorkbook classeur = new XSSFWorkbook();
+
+        // Créer une feuille dans le fichier Excel
+        XSSFSheet feuille = classeur.createSheet("Enfants");
+
+        // Créer une ligne pour les en-têtes de colonnes
+        XSSFRow entetes = feuille.createRow(0);
+        entetes.createCell(0).setCellValue("Num");
+        entetes.createCell(1).setCellValue("Num_Contrat");
+        entetes.createCell(2).setCellValue("Nom");
+        entetes.createCell(3).setCellValue("Prenom");
+        entetes.createCell(4).setCellValue("Date_Naissance");
+        entetes.createCell(5).setCellValue("Date_Entree");
+        entetes.createCell(6).setCellValue("Date_Sortie");
+        entetes.createCell(7).setCellValue("Lundi_AM");
+        entetes.createCell(8).setCellValue("Lundi_PM");
+        entetes.createCell(9).setCellValue("Mardi_AM");
+        entetes.createCell(10).setCellValue("Mardi_PM");
+        entetes.createCell(11).setCellValue("Mercredi_AM");
+        entetes.createCell(12).setCellValue("Mercredi_PM");
+        entetes.createCell(13).setCellValue("Jeudi_AM");
+        entetes.createCell(14).setCellValue("Jeudi_PM");
+        entetes.createCell(15).setCellValue("Vendredi_AM");
+        entetes.createCell(16).setCellValue("Vendredi_PM");
+
+        // Écrire les informations de chaque enfant dans une ligne différente
+        for (int i = 0; i < valeurs.size(); i++) {
+            Enfant enfant = valeurs.get(i);
+            XSSFRow ligne = feuille.createRow(i + 1);
+            ligne.createCell(0).setCellValue(enfant.getNum());
+            ligne.createCell(1).setCellValue(enfant.getNum_contrat());
+            ligne.createCell(2).setCellValue(enfant.getNom());
+            ligne.createCell(3).setCellValue(enfant.getPrenom());
+            ligne.createCell(4).setCellValue(enfant.getDate_naissance());
+            ligne.createCell(5).setCellValue(enfant.getDate_entree());
+            ligne.createCell(6).setCellValue(enfant.getDate_sortie());
+            ligne.createCell(7).setCellValue(enfant.getLundi_am());
+            ligne.createCell(8).setCellValue(enfant.getLundi_pm());
+            ligne.createCell(9).setCellValue(enfant.getMardi_am());
+            ligne.createCell(10).setCellValue(enfant.getMardi_pm());
+            ligne.createCell(11).setCellValue(enfant.getMercredi_am());
+            ligne.createCell(12).setCellValue(enfant.getMercredi_pm());
+            ligne.createCell(13).setCellValue(enfant.getJeudi_am());
+            ligne.createCell(14).setCellValue(enfant.getJeudi_pm());
+            ligne.createCell(15).setCellValue(enfant.getVendredi_am());
+            ligne.createCell(16).setCellValue(enfant.getVendredi_pm());
+
+
+        }
+
+        // Enregistrer le fichier Excel
+        FileOutputStream fichier = new FileOutputStream(nomFichier);
+        classeur.write(fichier);
+        fichier.close();
 }
     
   
@@ -547,6 +613,24 @@ public class MainMenu extends javax.swing.JFrame {
         jTable1.setRowSorter(trs);
         trs.setRowFilter(RowFilter.regexFilter(s));
         
+    }
+    
+    public Mois compterJour(Enfant enfant,Mois mois) {
+        
+         if(enfant.getLundi_am() == 1) {
+             System.out.println("lundi am " + enfant.getNum() + "   " + enfant.getLundi_am());
+             int cpt = mois.getLundi_AM();
+             cpt++;
+             mois.setLundi_AM(cpt);
+         }
+         
+         if(enfant.getLundi_pm() == 1) {
+             int cpt = mois.getLundi_PM();
+             cpt++;
+             mois.setLundi_PM(cpt);
+         }
+         
+         return mois;
     }
     /**
      * @param args the command line arguments

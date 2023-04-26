@@ -5,13 +5,13 @@ import java.sql.Date;
 
 public class Enfant implements Serializable {
 
-    private int num;
+    private String num;
     private String num_contrat;
     private String nom;
     private String prenom;
-    private Date date_naissance;
-    private Date date_entree;
-    private Date date_sortie;
+    private String date_naissance;
+    private String date_entree;
+    private String date_sortie;
     private int lundi_am;
     private int lundi_pm;
     private int mardi_am;
@@ -36,11 +36,11 @@ public class Enfant implements Serializable {
 
     }
 
-    public int getNum() {
+    public String getNum() {
         return num;
     }
 
-    public void setNum(int num) {
+    public void setNum(String num) {
         this.num = num;
     }
 
@@ -68,27 +68,27 @@ public class Enfant implements Serializable {
         this.prenom = prenom;
     }
 
-    public Date getDate_naissance() {
+    public String getDate_naissance() {
         return date_naissance;
     }
 
-    public void setDate_naissance(Date date_naissance) {
+    public void setDate_naissance(String date_naissance) {
         this.date_naissance = date_naissance;
     }
 
-    public Date getDate_entree() {
+    public String getDate_entree() {
         return date_entree;
     }
 
-    public void setDate_entree(Date date_entree) {
+    public void setDate_entree(String date_entree) {
         this.date_entree = date_entree;
     }
 
-    public Date getDate_sortie() {
+    public String getDate_sortie() {
         return date_sortie;
     }
 
-    public void setDate_sortie(Date date_sortie) {
+    public void setDate_sortie(String date_sortie) {
         this.date_sortie = date_sortie;
     }
 
