@@ -8,6 +8,7 @@ import Entities.Enfant;
 import Entities.Mois;
 import Utile.BeanBDAccess;
 import com.sun.media.sound.InvalidFormatException;
+import java.awt.Dialog;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,6 +25,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
+import javax.swing.WindowConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import org.apache.poi.ss.usermodel.*;
@@ -37,15 +41,24 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  */
 public class MainMenu extends javax.swing.JFrame {
 
-    /**
-     * Creates new form MainMenu
-     */
      private BeanBDAccess bd;
      private ResultSet resultat;
      private DefaultTableModel model;
      private DefaultTableModel modelMois;
      String file_path = "";
      List<Enfant> list = new ArrayList<Enfant>();
+     List<Enfant> enfantsJanvier = new ArrayList<Enfant>();
+     List<Enfant> enfantsFevrier = new ArrayList<Enfant>();
+     List<Enfant> enfantsMars = new ArrayList<Enfant>();
+     List<Enfant> enfantsAvril = new ArrayList<Enfant>();
+     List<Enfant> enfantsMai = new ArrayList<Enfant>();
+     List<Enfant> enfantsJuin = new ArrayList<Enfant>();
+     List<Enfant> enfantsJuillet = new ArrayList<Enfant>();
+     List<Enfant> enfantsAout= new ArrayList<Enfant>();
+     List<Enfant> enfantsSeptembre = new ArrayList<Enfant>();
+     List<Enfant> enfantsOctobre = new ArrayList<Enfant>();
+     List<Enfant> enfantsNovembre = new ArrayList<Enfant>();
+     List<Enfant> enfantsDecembre = new ArrayList<Enfant>();
      
     public MainMenu() throws IOException {
         initComponents();
@@ -61,43 +74,7 @@ public class MainMenu extends javax.swing.JFrame {
         modelMois = (DefaultTableModel)jTable2.getModel();
         
         list = readFile(file_path);
-         /*
-        resultat = bd.SelectBD("select * from enfant;");
-        try {
-            while(resultat.next())
-            {
-                Enfant enfant = new Enfant();
-                enfant.setNum(resultat.getInt("num"));
-                enfant.setNum_contrat(resultat.getString("num_contrat"));
-                enfant.setNom(resultat.getString("nom"));
-                enfant.setPrenom(resultat.getString("prenom"));
-                enfant.setDate_naissance(resultat.getDate("date_naissance"));
-                enfant.setDate_entree(resultat.getDate("date_entree"));
-                enfant.setDate_sortie(resultat.getDate("date_sortie"));
-                enfant.setLundi_am(resultat.getInt("lundi_am"));
-                enfant.setLundi_pm(resultat.getInt("lundi_pm"));
-                enfant.setMardi_am(resultat.getInt("mardi_am"));
-                enfant.setMardi_pm(resultat.getInt("mardi_pm"));
-                enfant.setMercredi_am(resultat.getInt("mercredi_am"));
-                enfant.setMercredi_pm(resultat.getInt("mercredi_pm"));
-                enfant.setJeudi_am(resultat.getInt("jeudi_am"));
-                enfant.setJeudi_pm(resultat.getInt("jeudi_pm"));
-                enfant.setVendredi_am(resultat.getInt("vendredi_am"));
-                enfant.setVendredi_am(resultat.getInt("vendredi_pm"));
-                enfant.setMontant_jour(resultat.getInt("montant_jour"));
-                enfant.setMontant_forfait(resultat.getInt("montant_forfait"));
-                enfant.setCommentaire(resultat.getString("commentaire"));
-                enfant.setMere(resultat.getString("mere"));
-                enfant.setEmail_mere(resultat.getString("email_mere"));
-                enfant.setNum_mere(resultat.getString("num_mere"));
-                enfant.setPere(resultat.getString("pere"));
-                enfant.setEmail_pere(resultat.getString("email_pere"));
-                enfant.setNum_pere(resultat.getString("num_pere"));
-                list.add(enfant);
-            }
-            */
-            //ecrireListeExcel(list,file_path);
-            
+        
             for(int i=0 ; i< list.size(); i++)
             { 
                 Enfant e = (Enfant) list.get(i);
@@ -105,7 +82,7 @@ public class MainMenu extends javax.swing.JFrame {
                 for(int j=0;j<list.size();j++)
                 {
                     vector.add(e.getNum());
-                    vector.add(e.getNum_contrat());
+                    //vector.add(e.getNum_contrat());
                     vector.add(e.getNom());
                     vector.add(e.getPrenom());
                     vector.add(e.getDate_naissance());
@@ -134,7 +111,96 @@ public class MainMenu extends javax.swing.JFrame {
                 }
                 model.addRow(vector);   
             } 
-  
+            
+            jTable2.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent event) {
+                    // Code à exécuter lorsque l'utilisateur sélectionne une ligne
+                   if (!event.getValueIsAdjusting()) {
+                        int selectedRow = jTable2.getSelectedRow();
+                        showPayementWindow(selectedRow);
+                     }
+                }
+            });
+    }
+    
+    public void showPayementWindow(int selectedRow) {
+        Payement payementWindow;
+        switch(selectedRow) {
+            case 0 :
+                for(int i=0;i<enfantsJanvier.size();i++) {
+                    System.out.println(" e " + enfantsJanvier.get(i));
+                }
+                payementWindow = new Payement("Janvier",enfantsJanvier);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 1 :
+                payementWindow = new Payement("Février",enfantsFevrier);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 2 :
+                payementWindow = new Payement("Mars",enfantsMars);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 3 :
+                payementWindow = new Payement("Avril",enfantsAvril);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 4 :
+                payementWindow = new Payement("Mai",enfantsMai);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 5 :
+                payementWindow = new Payement("Juin",enfantsJuin);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 6 :
+                payementWindow = new Payement("Juillet",enfantsJuillet);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 7 :
+                payementWindow = new Payement("Aout",enfantsAout);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 8 :
+                payementWindow = new Payement("Septembre",enfantsSeptembre);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 9 :
+                payementWindow = new Payement("Octobre",enfantsOctobre);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 10 :
+                payementWindow = new Payement("Novembre",enfantsNovembre);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+            
+            case 11 :
+                payementWindow = new Payement("Décembre",enfantsDecembre);
+                payementWindow.setVisible(true);
+                payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            break;
+        }
     }
 
     /**
@@ -161,6 +227,7 @@ public class MainMenu extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -173,6 +240,7 @@ public class MainMenu extends javax.swing.JFrame {
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
+        jTable1.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jTable1.setFont(new java.awt.Font("Segoe UI", 0, 19)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -234,7 +302,7 @@ public class MainMenu extends javax.swing.JFrame {
                 .addGap(22, 22, 22))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                    .addContainerGap(1464, Short.MAX_VALUE)
+                    .addContainerGap(1473, Short.MAX_VALUE)
                     .addComponent(jButton2)
                     .addGap(146, 146, 146)))
         );
@@ -253,31 +321,42 @@ public class MainMenu extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addGap(10, 10, 10)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 759, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(176, Short.MAX_VALUE))
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel2Layout.createSequentialGroup()
                     .addGap(34, 34, 34)
                     .addComponent(jButton2)
-                    .addContainerGap(791, Short.MAX_VALUE)))
+                    .addContainerGap(943, Short.MAX_VALUE)))
         );
 
         jTabbedPane1.addTab("Enfants", jPanel2);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
         jLabel2.setText("Entrez l'année : ");
 
+        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+
+        jTable2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Lundi-AM", "Lundi-PM", "Mardi-AM", "Mardi-PM", "Mercredi-AM", "Mercredi-PM", "Jeudi-AM", "Jeudi-PM", "Vendredi-AM", "Vendredi-PM"
+                "Mois", "Lundi-AM", "Lundi-PM", "Mardi-AM", "Mardi-PM", "Mercredi-AM", "Mercredi-PM", "Jeudi-AM", "Jeudi-PM", "Vendredi-AM", "Vendredi-PM"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jTable2.setGridColor(new java.awt.Color(255, 255, 255));
-        jTable2.setRowHeight(30);
+        jTable2.setRowHeight(60);
         jTable2.setSelectionBackground(new java.awt.Color(51, 153, 255));
         jTable2.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(jTable2);
@@ -289,35 +368,52 @@ public class MainMenu extends javax.swing.JFrame {
             }
         });
 
+        jButton4.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
+        jButton4.setText("Détails\n");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(81, 81, 81)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1523, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(81, 81, 81)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27)
-                        .addComponent(jButton3))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(76, 76, 76)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1522, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(102, Short.MAX_VALUE))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton3)))
+                .addContainerGap(96, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(809, 809, 809)
+                    .addComponent(jButton4)
+                    .addContainerGap(810, Short.MAX_VALUE)))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton3))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 753, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(27, Short.MAX_VALUE))
+                .addGap(20, 20, 20)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 762, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(169, Short.MAX_VALUE))
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel3Layout.createSequentialGroup()
+                    .addGap(412, 412, 412)
+                    .addComponent(jButton4)
+                    .addContainerGap(565, Short.MAX_VALUE)))
         );
 
         jTabbedPane1.addTab("Mois", jPanel3);
@@ -341,7 +437,7 @@ public class MainMenu extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 1048, Short.MAX_VALUE)
         );
 
         pack();
@@ -363,7 +459,7 @@ public class MainMenu extends javax.swing.JFrame {
             
              Object selectedValue = jTable1.getValueAt(selectedRow, selectedColumn);
              
-    }
+        }
         //EnfantsDétails e = new EnfantsDétails(jTable1.get);
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -381,15 +477,29 @@ public class MainMenu extends javax.swing.JFrame {
          }
 
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton4ActionPerformed
     
     public void parseFileMonth(String filePath) throws FileNotFoundException, InvalidFormatException, org.apache.poi.openxml4j.exceptions.InvalidFormatException {
         try {
             List<Mois> listMois = new ArrayList<Mois>();
             Mois janvier = new Mois();
             Mois fevrier = new Mois();
+            Mois mars = new Mois();
+            Mois avril = new Mois();
+            Mois mai = new Mois();
+            Mois juin = new Mois();
+            Mois juillet = new Mois();
+            Mois aout = new Mois();
+            Mois septembre = new Mois();
+            Mois octobre = new Mois();
+            Mois novembre = new Mois();
+            Mois decembre = new Mois();
+
             //Création d'un objet FileInputStream pour lire le fichier
             FileInputStream fis = new FileInputStream(new File(filePath));
-
             //Création d'un objet Workbook à partir du fichier
             Workbook workbook = WorkbookFactory.create(fis);
 
@@ -401,75 +511,167 @@ public class MainMenu extends javax.swing.JFrame {
             while (rows.hasNext()) {
                 
                 Row row = rows.next();
-                System.out.println("row" + row.getCell(0)); 
                 Double d = row.getCell(0).getNumericCellValue();
                 Enfant enfant = rechercheParId(list, Double.toString(d));
                 
                 if(row.getCell(1).getNumericCellValue() == 1) {      
-                    //recherche dans autre fichier
                     janvier.setMois("Janvier");
-                    System.out.println("Enfant : " + enfant);
-                    janvier = compterJour(enfant,janvier);     
+                    Cell cell = row.getCell(13);
+                    if (cell != null) {
+                        enfant.setPaye((int) row.getCell(13).getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                   
+                    janvier = compterJour(enfant,janvier);  
+                    enfantsJanvier.add(enfant);
                     
                 } 
                 
                 if(row.getCell(2).getNumericCellValue() == 1) {
                     fevrier.setMois("Février");
+                    Cell cell = row.getCell(14);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
                     fevrier = compterJour(enfant,fevrier);
-                    //recherche dans autre fichier
+                    enfantsFevrier.add(enfant);
                 } 
                 
                 if(row.getCell(3).getNumericCellValue() == 1) {
-                  
-                    //recherche dans autre fichier
+                    mars.setMois("Mars");
+                    Cell cell = row.getCell(15);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    mars = compterJour(enfant,mars);
+                    enfantsMars.add(enfant);
                 }
                 
                 if(row.getCell(4).getNumericCellValue() == 1) {
-                 
-                    //recherche dans autre fichier
+                    avril.setMois("Avril");
+                    Cell cell = row.getCell(16);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    avril = compterJour(enfant,avril);
+                    enfantsAvril.add(enfant);
                 } 
                 
                 if(row.getCell(5).getNumericCellValue() == 1) {
-                
-                    //recherche dans autre fichier
+                    mai.setMois("Mai");
+                    Cell cell = row.getCell(17);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    mai = compterJour(enfant,mai);
+                    enfantsMai.add(enfant);
                 } 
                 
                 if(row.getCell(6).getNumericCellValue() == 1) {
-                   
-                    //recherche dans autre fichier
+                    juin.setMois("Juin");
+                    Cell cell = row.getCell(18);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    juin = compterJour(enfant,juin);
+                    enfantsJuin.add(enfant);
                 } 
                 
                 if(row.getCell(7).getNumericCellValue() == 1) {
-                   
-                    //recherche dans autre fichier
+                    juillet.setMois("Juillet");
+                    Cell cell = row.getCell(19);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    juillet = compterJour(enfant,juillet);
+                    enfantsJuillet.add(enfant);
                 } 
                 
                 if(row.getCell(8).getNumericCellValue() == 1) {
-                   
-                    //recherche dans autre fichier
+                    aout.setMois("Aout");
+                    Cell cell = row.getCell(20);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    aout = compterJour(enfant,aout);
+                    enfantsAout.add(enfant);
                 } 
                 
                 if(row.getCell(9).getNumericCellValue() == 1) {
-                  
-                    //recherche dans autre fichier
+                    septembre.setMois("Septembre");
+                    Cell cell = row.getCell(21);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    septembre = compterJour(enfant,septembre);
+                    enfantsSeptembre.add(enfant);
                 } 
                 
                 if(row.getCell(10).getNumericCellValue() == 1) {
-                   
-                    //recherche dans autre fichier
+                    octobre.setMois("Octobre");
+                    Cell cell = row.getCell(22);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    octobre = compterJour(enfant,octobre);
+                    enfantsOctobre.add(enfant);
                 } 
                 
                 if(row.getCell(11).getNumericCellValue() == 1) {
-                   
-                    //recherche dans autre fichier
+                    novembre.setMois("Novembre");
+                    Cell cell = row.getCell(23);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    novembre = compterJour(enfant,novembre);
+                    enfantsNovembre.add(enfant);
                 }
                 
                 if(row.getCell(12).getNumericCellValue() == 1) {
-                    //recherche dans autre fichier
+                    decembre.setMois("Decembre");
+                    Cell cell = row.getCell(24);
+                    if (cell != null) {
+                        enfant.setPaye((int) cell.getNumericCellValue());
+                    } else {
+                        enfant.setPaye(0); 
+                    }
+                    decembre = compterJour(enfant,decembre);
+                    enfantsDecembre.add(enfant);
                 } 
             }
             listMois.add(janvier);
             listMois.add(fevrier); 
+            listMois.add(mars);
+            listMois.add(avril);
+            listMois.add(mai);
+            listMois.add(juin);
+            listMois.add(juillet);
+            listMois.add(aout);
+            listMois.add(septembre);
+            listMois.add(octobre);
+            listMois.add(novembre);
+            listMois.add(decembre);
  
             for(int i=0 ; i< listMois.size(); i++)
             { 
@@ -524,8 +726,12 @@ public class MainMenu extends javax.swing.JFrame {
                 e.setLundi_pm((int)(row.getCell(8).getNumericCellValue()));
                 e.setMardi_am((int)(row.getCell(9).getNumericCellValue()));
                 e.setMardi_pm((int)(row.getCell(10).getNumericCellValue()));
-                e.setMercredi_pm((int)(row.getCell(11).getNumericCellValue()));
+                e.setMercredi_am((int)(row.getCell(11).getNumericCellValue()));
                 e.setMercredi_pm((int)(row.getCell(12).getNumericCellValue()));
+                e.setJeudi_am((int)(row.getCell(13).getNumericCellValue()));
+                e.setJeudi_pm((int)(row.getCell(14).getNumericCellValue()));
+                e.setVendredi_am((int)(row.getCell(15).getNumericCellValue()));
+                e.setVendredi_pm((int)(row.getCell(16).getNumericCellValue()));
                 list.add(e);
             }
             
@@ -597,8 +803,6 @@ public class MainMenu extends javax.swing.JFrame {
             ligne.createCell(14).setCellValue(enfant.getJeudi_pm());
             ligne.createCell(15).setCellValue(enfant.getVendredi_am());
             ligne.createCell(16).setCellValue(enfant.getVendredi_pm());
-
-
         }
 
         // Enregistrer le fichier Excel
@@ -616,9 +820,8 @@ public class MainMenu extends javax.swing.JFrame {
     }
     
     public Mois compterJour(Enfant enfant,Mois mois) {
-        
+        System.out.println("cptJour " + enfant.getPaye());
          if(enfant.getLundi_am() == 1) {
-             System.out.println("lundi am " + enfant.getNum() + "   " + enfant.getLundi_am());
              int cpt = mois.getLundi_AM();
              cpt++;
              mois.setLundi_AM(cpt);
@@ -628,6 +831,54 @@ public class MainMenu extends javax.swing.JFrame {
              int cpt = mois.getLundi_PM();
              cpt++;
              mois.setLundi_PM(cpt);
+         }
+         
+         if(enfant.getMardi_am() == 1) {
+             int cpt = mois.getMardi_AM();
+             cpt++;
+             mois.setMardi_AM(cpt);
+         }
+         
+          if(enfant.getMardi_pm() == 1) {
+             int cpt = mois.getMardi_PM();
+             cpt++;
+             mois.setMardi_PM(cpt);
+         }
+          
+         if(enfant.getMercredi_am() == 1) {
+             int cpt = mois.getMercredi_AM();
+             cpt++;
+             mois.setMercredi_AM(cpt);
+         }
+         
+          if(enfant.getMercredi_pm() == 1) {
+             int cpt = mois.getMercredi_PM();
+             cpt++;
+             mois.setMercredi_PM(cpt);
+         }
+          
+         if(enfant.getJeudi_am() == 1) {
+             int cpt = mois.getJeudi_AM();
+             cpt++;
+             mois.setJeudi_AM(cpt);
+         }
+         
+         if(enfant.getJeudi_pm() == 1) {
+             int cpt = mois.getJeudi_PM();
+             cpt++;
+             mois.setJeudi_PM(cpt);
+         }
+         
+         if(enfant.getVendredi_am() == 1) {
+             int cpt = mois.getVendredi_AM();
+             cpt++;
+             mois.setVendredi_AM(cpt);
+         }
+         
+         if(enfant.getVendredi_pm() == 1) {
+             int cpt = mois.getVendredi_PM();
+             cpt++;
+             mois.setVendredi_PM(cpt);
          }
          
          return mois;
@@ -675,6 +926,7 @@ public class MainMenu extends javax.swing.JFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

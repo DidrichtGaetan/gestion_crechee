@@ -31,6 +31,8 @@ public class Enfant implements Serializable {
     private String pere;
     private String num_pere;
     private String email_pere;
+    
+    private int paye;
 
     public Enfant() {
 
@@ -244,6 +246,14 @@ public class Enfant implements Serializable {
         this.email_pere = email_pere;
     }
 
+    public int getPaye() {
+        return paye;
+    }
+
+    public void setPaye(int paye) {
+        this.paye = paye;
+    }
+
     @Override
     public String toString() {
         return
@@ -273,6 +283,7 @@ public class Enfant implements Serializable {
                 ", pere='" + pere + '\'' +
                 ", num_pere=" + num_pere +
                 ", email_pere='" + email_pere + '\'' +
+                ", paye='" + paye + '\'' +
                 '}';
     }
 }
