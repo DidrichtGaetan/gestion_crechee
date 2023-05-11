@@ -5,9 +5,24 @@
 package Form;
 
 import Entities.Enfant;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -19,7 +34,6 @@ public class Payement extends javax.swing.JFrame {
      * Creates new form Payement
      */
     DefaultTableModel model;
-    
     public Payement() {
         initComponents();
     }
@@ -28,10 +42,9 @@ public class Payement extends javax.swing.JFrame {
         model = (DefaultTableModel)jTable1.getModel();
         jLabel2.setText(mois);
         
-         for(int i=0 ; i< enfants.size(); i++)
-            { 
+        for(int i=0 ; i< enfants.size(); i++)
+        { 
                 Enfant e = (Enfant) enfants.get(i);
-                System.out.println("e : " + e);
                 Vector vector = new Vector<>();
                 for(int j=0;j<enfants.size();j++)
                 {
@@ -42,7 +55,122 @@ public class Payement extends javax.swing.JFrame {
                     vector.add(e.getPaye());
                 }
                 model.addRow(vector);   
+        }
+        model.addTableModelListener(new TableModelListener() {
+        @Override
+        public void tableChanged(TableModelEvent e) {
+            int row = e.getFirstRow();
+            int column = e.getColumn();
+            Object newValue = model.getValueAt(row, column);
+            
+            Object[] rowData = new Object[model.getColumnCount()];
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                rowData[i] = model.getValueAt(row, i);
             }
+
+            XSSFRow ligne = rechercheLigne("C:\\Temp\\mois-2023.xlsx" , Double.parseDouble(rowData[0].toString()));   
+            try {
+                updateLigne(ligne, Double.parseDouble(newValue.toString()));
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Payement.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        });
+         
+    }
+    
+    public void updateLigne(XSSFRow ligne,Double valeur) throws InterruptedException {
+        int indice = 0;
+        switch(jLabel2.getText()) {
+            case "Janvier" :
+                indice = 13;
+            break;
+            
+            case "Février" :
+               indice = 14;
+            break;
+            
+            case "Mars" :
+               indice = 15;
+            break;
+            
+            case "Avril" :
+              indice = 16;
+            break;
+            
+            case "Mai" :
+                indice = 17;
+            break;
+            
+            case "Juin" :
+               indice = 18;
+            break;
+            
+            case "Juillet" :
+                indice = 19;
+            break;
+            
+            case "Aout" :
+               indice = 20;
+            break;
+            
+            case "Septembre" :
+                indice = 21;
+            break;
+            
+            case "Octobre" :
+               indice = 22;
+            break;
+            
+            case "Novembre" :
+               indice = 23;
+            break;
+            
+            case "Décembre" :
+              indice = 24;
+            break;
+        }
+        
+        try {
+            
+            XSSFSheet dataSheet = null; 
+            FileOutputStream output = new FileOutputStream("C:\\Temp\\mois-2023.xlsx");
+            dataSheet.getRow(ligne.getRowNum()).getCell(indice).setCellValue(valeur);
+            dataSheet.getWorkbook().write(output);
+            output.close();
+            
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+            
+        } catch(IOException e){
+       
+        }
+        
+    }
+    
+    public XSSFRow rechercheLigne(String path,Double idRecherche) {
+        FileInputStream fichier;
+        XSSFRow ligneRecherchee = null;
+         try {
+                fichier = new FileInputStream(new File(path));
+                XSSFWorkbook classeur = new XSSFWorkbook(fichier);
+                XSSFSheet feuille = classeur.getSheetAt(0); 
+                for (int i = 1; i < feuille.getPhysicalNumberOfRows(); i++) {
+                    XSSFRow ligne = feuille.getRow(i);
+                    if (ligne.getCell(0).getNumericCellValue() == idRecherche) {
+                        ligneRecherchee = ligne;
+                        break;
+                    }
+                }
+            fichier.close();
+            classeur.close();
+         } catch (FileNotFoundException ex) {
+             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+         } catch (IOException ex) {
+             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         System.out.println("Ligne recherché : " + ligneRecherchee.getCell(0).getNumericCellValue());
+         return ligneRecherchee;
         
     }
     

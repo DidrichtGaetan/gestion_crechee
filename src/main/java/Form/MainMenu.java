@@ -47,6 +47,7 @@ public class MainMenu extends javax.swing.JFrame {
      private DefaultTableModel modelMois;
      String file_path = "";
      List<Enfant> list = new ArrayList<Enfant>();
+     List<Enfant> Fulllist = new ArrayList<Enfant>();
      List<Enfant> enfantsJanvier = new ArrayList<Enfant>();
      List<Enfant> enfantsFevrier = new ArrayList<Enfant>();
      List<Enfant> enfantsMars = new ArrayList<Enfant>();
@@ -59,6 +60,7 @@ public class MainMenu extends javax.swing.JFrame {
      List<Enfant> enfantsOctobre = new ArrayList<Enfant>();
      List<Enfant> enfantsNovembre = new ArrayList<Enfant>();
      List<Enfant> enfantsDecembre = new ArrayList<Enfant>();
+     List<Mois> listMois = new ArrayList<Mois>();
      
     public MainMenu() throws IOException {
         initComponents();
@@ -81,8 +83,7 @@ public class MainMenu extends javax.swing.JFrame {
                 Vector vector = new Vector<>();
                 for(int j=0;j<list.size();j++)
                 {
-                    vector.add(e.getNum());
-                    //vector.add(e.getNum_contrat());
+                    vector.add(e.getNum()); 
                     vector.add(e.getNom());
                     vector.add(e.getPrenom());
                     vector.add(e.getDate_naissance());
@@ -107,10 +108,33 @@ public class MainMenu extends javax.swing.JFrame {
                     vector.add(e.getPere());
                     vector.add(e.getEmail_pere());
                     vector.add(e.getNum_pere());
-
+                    vector.add(e.getNum_contrat());
+                    Fulllist.add(e);
                 }
-                model.addRow(vector);   
-            } 
+                model.addRow(vector);  
+                
+            }
+            
+            jTable1.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (!event.getValueIsAdjusting()) {
+                    int selectedRow = jTable1.getSelectedRow();
+                    if (selectedRow != -1) {
+                        // Convertit l'indice de ligne de la JTable en indice de ligne dans le modèle de données
+                        int modelRowIndex = jTable1.convertRowIndexToModel(selectedRow);
+                        Object[] rowData = new Object[model.getColumnCount()];
+                        for (int i = 0; i < model.getColumnCount(); i++) {
+                            rowData[i] = model.getValueAt(modelRowIndex, i); 
+                        } 
+                        Enfant e = rechercheParId(Fulllist,rowData[0].toString());
+                        System.out.println("enfant : " + e);
+                        EnfantDetail detailsWindow = new EnfantDetail(e);
+                        detailsWindow.setVisible(true);
+                        detailsWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                    }
+                }
+            }
+        });
             
             jTable2.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
                 public void valueChanged(ListSelectionEvent event) {
@@ -127,9 +151,6 @@ public class MainMenu extends javax.swing.JFrame {
         Payement payementWindow;
         switch(selectedRow) {
             case 0 :
-                for(int i=0;i<enfantsJanvier.size();i++) {
-                    System.out.println(" e " + enfantsJanvier.get(i));
-                }
                 payementWindow = new Payement("Janvier",enfantsJanvier);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -219,8 +240,6 @@ public class MainMenu extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jTextField2 = new javax.swing.JTextField();
@@ -263,25 +282,14 @@ public class MainMenu extends javax.swing.JFrame {
         jLabel1.setText("Recherche : ");
 
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField1KeyReleased(evt);
-            }
-        });
-
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jButton1.setText("Détails\n");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 17)); // NOI18N
-        jButton2.setText("Détails\n");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
             }
         });
 
@@ -291,42 +299,24 @@ public class MainMenu extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap(28, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 1650, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(22, 22, 22))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                    .addContainerGap(1473, Short.MAX_VALUE)
-                    .addComponent(jButton2)
-                    .addGap(146, 146, 146)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jButton1)
-                        .addGap(10, 10, 10)))
+                .addGap(21, 21, 21)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 759, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(176, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addGap(34, 34, 34)
-                    .addComponent(jButton2)
-                    .addContainerGap(943, Short.MAX_VALUE)))
         );
 
         jTabbedPane1.addTab("Enfants", jPanel2);
@@ -443,27 +433,13 @@ public class MainMenu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
-
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
            // TODO add your handling code here:
         search(jTextField1.getText());
     }//GEN-LAST:event_jTextField1KeyReleased
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        int selectedRow = jTable1.getSelectedRow();
-        if (selectedRow != -1) {
-            int selectedColumn = jTable1.getSelectedColumn();
-            
-             Object selectedValue = jTable1.getValueAt(selectedRow, selectedColumn);
-             
-        }
-        //EnfantsDétails e = new EnfantsDétails(jTable1.get);
-    }//GEN-LAST:event_jButton2ActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+
         try {
             // TODO add your handling code here:
             parseFileMonth("C:\\Temp\\"+"mois-"+jTextField2.getText()+".xlsx");
@@ -481,10 +457,27 @@ public class MainMenu extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
     
     public void parseFileMonth(String filePath) throws FileNotFoundException, InvalidFormatException, org.apache.poi.openxml4j.exceptions.InvalidFormatException {
         try {
-            List<Mois> listMois = new ArrayList<Mois>();
+            System.out.println("mois = " + listMois.size());
+            listMois.clear();
+            enfantsJanvier.clear();
+            enfantsFevrier.clear();
+            enfantsMars.clear();
+            enfantsAvril.clear();
+            enfantsMai.clear();
+            enfantsJuin.clear();
+            enfantsJuillet.clear();
+            enfantsAout.clear();
+            enfantsSeptembre.clear();
+            enfantsOctobre.clear();
+            enfantsNovembre.clear();
+            enfantsDecembre.clear();
             Mois janvier = new Mois();
             Mois fevrier = new Mois();
             Mois mars = new Mois();
@@ -735,7 +728,6 @@ public class MainMenu extends javax.swing.JFrame {
                 list.add(e);
             }
             
-
         } catch (IOException e) {
             e.printStackTrace();
 
@@ -815,10 +807,10 @@ public class MainMenu extends javax.swing.JFrame {
     public void search(String s) {
         TableRowSorter<DefaultTableModel> trs = new TableRowSorter <>(model);
         jTable1.setRowSorter(trs);
-        trs.setRowFilter(RowFilter.regexFilter(s));
+        trs.setRowFilter(RowFilter.regexFilter("(?i)" + s));
         
     }
-    
+ 
     public Mois compterJour(Enfant enfant,Mois mois) {
         System.out.println("cptJour " + enfant.getPaye());
          if(enfant.getLundi_am() == 1) {
@@ -923,8 +915,6 @@ public class MainMenu extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
