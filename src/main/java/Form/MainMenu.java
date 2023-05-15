@@ -7,6 +7,7 @@ package Form;
 import Entities.Enfant;
 import Entities.Mois;
 import Utile.BeanBDAccess;
+import Utile.FonctionsUtiles;
 import com.sun.media.sound.InvalidFormatException;
 import java.awt.Dialog;
 import java.io.File;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -46,6 +48,7 @@ public class MainMenu extends javax.swing.JFrame {
      private DefaultTableModel model;
      private DefaultTableModel modelMois;
      String file_path = "";
+     String path_mois = "";
      List<Enfant> list = new ArrayList<Enfant>();
      List<Enfant> Fulllist = new ArrayList<Enfant>();
      List<Enfant> enfantsJanvier = new ArrayList<Enfant>();
@@ -64,10 +67,13 @@ public class MainMenu extends javax.swing.JFrame {
      
     public MainMenu() throws IOException {
         initComponents();
+        Properties prop = FonctionsUtiles.ChargerProperties();
+        System.out.println("prop : " + prop.getProperty("Path_zip"));
         String os = System.getProperty("os.name");
         if (os.contains("Windows")) {
             // Windows
             file_path = "C:\\Temp\\enfants.xlsx";
+            path_mois = "C:\\Temp\\";
         } else if (os.contains("Mac")) {
             // Mac
         }
@@ -141,83 +147,87 @@ public class MainMenu extends javax.swing.JFrame {
                     // Code à exécuter lorsque l'utilisateur sélectionne une ligne
                    if (!event.getValueIsAdjusting()) {
                         int selectedRow = jTable2.getSelectedRow();
-                        showPayementWindow(selectedRow);
+                       try {
+                           showPayementWindow(selectedRow);
+                       } catch (InterruptedException ex) {
+                           Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
+                       }
                      }
                 }
             });
     }
     
-    public void showPayementWindow(int selectedRow) {
+    public void showPayementWindow(int selectedRow) throws InterruptedException {
         Payement payementWindow;
         switch(selectedRow) {
             case 0 :
-                payementWindow = new Payement("Janvier",enfantsJanvier);
+                payementWindow = new Payement("Janvier",jTextField2.getText(),enfantsJanvier); 
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 1 :
-                payementWindow = new Payement("Février",enfantsFevrier);
+                payementWindow = new Payement("Février",jTextField2.getText(),enfantsFevrier);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 2 :
-                payementWindow = new Payement("Mars",enfantsMars);
+                payementWindow = new Payement("Mars",jTextField2.getText(),enfantsMars);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 3 :
-                payementWindow = new Payement("Avril",enfantsAvril);
+                payementWindow = new Payement("Avril",jTextField2.getText(),enfantsAvril);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 4 :
-                payementWindow = new Payement("Mai",enfantsMai);
+                payementWindow = new Payement("Mai",jTextField2.getText(),enfantsMai);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 5 :
-                payementWindow = new Payement("Juin",enfantsJuin);
+                payementWindow = new Payement("Juin",jTextField2.getText(),enfantsJuin);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 6 :
-                payementWindow = new Payement("Juillet",enfantsJuillet);
+                payementWindow = new Payement("Juillet",jTextField2.getText(),enfantsJuillet);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 7 :
-                payementWindow = new Payement("Aout",enfantsAout);
+                payementWindow = new Payement("Aout",jTextField2.getText(),enfantsAout);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 8 :
-                payementWindow = new Payement("Septembre",enfantsSeptembre);
+                payementWindow = new Payement("Septembre",jTextField2.getText(),enfantsSeptembre);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 9 :
-                payementWindow = new Payement("Octobre",enfantsOctobre);
+                payementWindow = new Payement("Octobre",jTextField2.getText(),enfantsOctobre);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 10 :
-                payementWindow = new Payement("Novembre",enfantsNovembre);
+                payementWindow = new Payement("Novembre",jTextField2.getText(),enfantsNovembre);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
             
             case 11 :
-                payementWindow = new Payement("Décembre",enfantsDecembre);
+                payementWindow = new Payement("Décembre",jTextField2.getText(),enfantsDecembre);
                 payementWindow.setVisible(true);
                 payementWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             break;
@@ -323,10 +333,10 @@ public class MainMenu extends javax.swing.JFrame {
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 22)); // NOI18N
         jLabel2.setText("Entrez l'année : ");
 
-        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
 
         jTable2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
@@ -351,6 +361,7 @@ public class MainMenu extends javax.swing.JFrame {
         jTable2.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(jTable2);
 
+        jButton3.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         jButton3.setText("Recherche");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -375,10 +386,10 @@ public class MainMenu extends javax.swing.JFrame {
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1523, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(jButton3)))
                 .addContainerGap(96, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -391,14 +402,13 @@ public class MainMenu extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel2)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(30, 30, 30)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton3))
+                .addGap(29, 29, 29)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 762, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(169, Short.MAX_VALUE))
+                .addContainerGap(163, Short.MAX_VALUE))
             .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel3Layout.createSequentialGroup()
                     .addGap(412, 412, 412)
@@ -442,7 +452,7 @@ public class MainMenu extends javax.swing.JFrame {
 
         try {
             // TODO add your handling code here:
-            parseFileMonth("C:\\Temp\\"+"mois-"+jTextField2.getText()+".xlsx");
+            parseFileMonth(path_mois+"mois-"+jTextField2.getText()+".xlsx");
 
         } catch (FileNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Fichier introuvable", "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -464,7 +474,6 @@ public class MainMenu extends javax.swing.JFrame {
     
     public void parseFileMonth(String filePath) throws FileNotFoundException, InvalidFormatException, org.apache.poi.openxml4j.exceptions.InvalidFormatException {
         try {
-            System.out.println("mois = " + listMois.size());
             listMois.clear();
             enfantsJanvier.clear();
             enfantsFevrier.clear();
@@ -507,7 +516,9 @@ public class MainMenu extends javax.swing.JFrame {
                 Double d = row.getCell(0).getNumericCellValue();
                 Enfant enfant = rechercheParId(list, Double.toString(d));
                 
-                if(row.getCell(1).getNumericCellValue() == 1) {      
+                if(row.getCell(1) != null) {
+                    
+                    if(row.getCell(1).getNumericCellValue() == 1) {      
                     janvier.setMois("Janvier");
                     Cell cell = row.getCell(13);
                     if (cell != null) {
@@ -519,139 +530,162 @@ public class MainMenu extends javax.swing.JFrame {
                     janvier = compterJour(enfant,janvier);  
                     enfantsJanvier.add(enfant);
                     
-                } 
-                
-                if(row.getCell(2).getNumericCellValue() == 1) {
-                    fevrier.setMois("Février");
-                    Cell cell = row.getCell(14);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    fevrier = compterJour(enfant,fevrier);
-                    enfantsFevrier.add(enfant);
-                } 
-                
-                if(row.getCell(3).getNumericCellValue() == 1) {
-                    mars.setMois("Mars");
-                    Cell cell = row.getCell(15);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    mars = compterJour(enfant,mars);
-                    enfantsMars.add(enfant);
+                    } 
                 }
                 
-                if(row.getCell(4).getNumericCellValue() == 1) {
-                    avril.setMois("Avril");
-                    Cell cell = row.getCell(16);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    avril = compterJour(enfant,avril);
-                    enfantsAvril.add(enfant);
-                } 
-                
-                if(row.getCell(5).getNumericCellValue() == 1) {
-                    mai.setMois("Mai");
-                    Cell cell = row.getCell(17);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    mai = compterJour(enfant,mai);
-                    enfantsMai.add(enfant);
-                } 
-                
-                if(row.getCell(6).getNumericCellValue() == 1) {
-                    juin.setMois("Juin");
-                    Cell cell = row.getCell(18);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    juin = compterJour(enfant,juin);
-                    enfantsJuin.add(enfant);
-                } 
-                
-                if(row.getCell(7).getNumericCellValue() == 1) {
-                    juillet.setMois("Juillet");
-                    Cell cell = row.getCell(19);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    juillet = compterJour(enfant,juillet);
-                    enfantsJuillet.add(enfant);
-                } 
-                
-                if(row.getCell(8).getNumericCellValue() == 1) {
-                    aout.setMois("Aout");
-                    Cell cell = row.getCell(20);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    aout = compterJour(enfant,aout);
-                    enfantsAout.add(enfant);
-                } 
-                
-                if(row.getCell(9).getNumericCellValue() == 1) {
-                    septembre.setMois("Septembre");
-                    Cell cell = row.getCell(21);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    septembre = compterJour(enfant,septembre);
-                    enfantsSeptembre.add(enfant);
-                } 
-                
-                if(row.getCell(10).getNumericCellValue() == 1) {
-                    octobre.setMois("Octobre");
-                    Cell cell = row.getCell(22);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    octobre = compterJour(enfant,octobre);
-                    enfantsOctobre.add(enfant);
-                } 
-                
-                if(row.getCell(11).getNumericCellValue() == 1) {
-                    novembre.setMois("Novembre");
-                    Cell cell = row.getCell(23);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
-                    }
-                    novembre = compterJour(enfant,novembre);
-                    enfantsNovembre.add(enfant);
+                if(row.getCell(2) != null) {
+                    if(row.getCell(2).getNumericCellValue() == 1) {
+                        fevrier.setMois("Février");
+                        Cell cell = row.getCell(14);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        fevrier = compterJour(enfant,fevrier);
+                        enfantsFevrier.add(enfant);
+                    } 
                 }
                 
-                if(row.getCell(12).getNumericCellValue() == 1) {
-                    decembre.setMois("Decembre");
-                    Cell cell = row.getCell(24);
-                    if (cell != null) {
-                        enfant.setPaye((int) cell.getNumericCellValue());
-                    } else {
-                        enfant.setPaye(0); 
+                if(row.getCell(3) != null) {
+                    if(row.getCell(3).getNumericCellValue() == 1) {
+                        mars.setMois("Mars");
+                        Cell cell = row.getCell(15);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        mars = compterJour(enfant,mars);
+                        enfantsMars.add(enfant);
                     }
-                    decembre = compterJour(enfant,decembre);
-                    enfantsDecembre.add(enfant);
-                } 
+                }
+                
+                if(row.getCell(4) != null) {
+                    if(row.getCell(4).getNumericCellValue() == 1) {
+                        avril.setMois("Avril");
+                        Cell cell = row.getCell(16);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        avril = compterJour(enfant,avril);
+                        enfantsAvril.add(enfant);
+                    }
+                }
+                
+                if(row.getCell(5) != null) {
+                    if(row.getCell(5).getNumericCellValue() == 1) {
+                        mai.setMois("Mai");
+                        Cell cell = row.getCell(17);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        mai = compterJour(enfant,mai);
+                        enfantsMai.add(enfant);
+                    } 
+                }
+                
+                if(row.getCell(6) != null) {
+                    if(row.getCell(6).getNumericCellValue() == 1) {
+                        juin.setMois("Juin");
+                        Cell cell = row.getCell(18);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        juin = compterJour(enfant,juin);
+                        enfantsJuin.add(enfant);
+                    }
+                }
+                
+                if(row.getCell(7) != null) {
+                    if(row.getCell(7).getNumericCellValue() == 1) {
+                        juillet.setMois("Juillet");
+                        Cell cell = row.getCell(19);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        juillet = compterJour(enfant,juillet);
+                        enfantsJuillet.add(enfant);
+                    } 
+                }
+                
+                if(row.getCell(8) != null) {
+                    if(row.getCell(8).getNumericCellValue() == 1) {
+                        aout.setMois("Aout");
+                        Cell cell = row.getCell(20);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        aout = compterJour(enfant,aout);
+                        enfantsAout.add(enfant);
+                    } 
+                }
+                
+                if(row.getCell(9) != null) {
+                    if(row.getCell(9).getNumericCellValue() == 1) {
+                        septembre.setMois("Septembre");
+                        Cell cell = row.getCell(21);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        septembre = compterJour(enfant,septembre);
+                        enfantsSeptembre.add(enfant);
+                    } 
+                }
+                
+                if(row.getCell(10) != null) {
+                    if(row.getCell(10).getNumericCellValue() == 1) {
+                        octobre.setMois("Octobre");
+                        Cell cell = row.getCell(22);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        octobre = compterJour(enfant,octobre);
+                        enfantsOctobre.add(enfant);
+                    } 
+                }
+                
+                if(row.getCell(11) != null) {
+                    if(row.getCell(11).getNumericCellValue() == 1) {
+                        novembre.setMois("Novembre");
+                        Cell cell = row.getCell(23);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        novembre = compterJour(enfant,novembre);
+                        enfantsNovembre.add(enfant);
+                    }
+                }
+                
+                if(row.getCell(12) != null) {
+                    if(row.getCell(12).getNumericCellValue() == 1) {
+                        decembre.setMois("Decembre");
+                        Cell cell = row.getCell(24);
+                        if (cell != null) {
+                            enfant.setPaye((int) cell.getNumericCellValue());
+                        } else {
+                            enfant.setPaye(0); 
+                        }
+                        decembre = compterJour(enfant,decembre);
+                        enfantsDecembre.add(enfant);
+                    } 
+                }
             }
             listMois.add(janvier);
             listMois.add(fevrier); 
@@ -812,7 +846,6 @@ public class MainMenu extends javax.swing.JFrame {
     }
  
     public Mois compterJour(Enfant enfant,Mois mois) {
-        System.out.println("cptJour " + enfant.getPaye());
          if(enfant.getLundi_am() == 1) {
              int cpt = mois.getLundi_AM();
              cpt++;

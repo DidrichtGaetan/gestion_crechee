@@ -34,17 +34,32 @@ public class Payement extends javax.swing.JFrame {
      * Creates new form Payement
      */
     DefaultTableModel model;
+    String file_path ="";
+    String path_mois ="";
+    String annee;
     public Payement() {
         initComponents();
     }
-    public Payement(String mois, List<Enfant> enfants) {
+    public Payement(String mois,String annee, List<Enfant> enfants) throws InterruptedException {
         initComponents();
+        this.annee = annee;
+        String os = System.getProperty("os.name");
+        if (os.contains("Windows")) {
+            // Windows
+            file_path = "C:\\Temp\\enfants.xlsx";
+            path_mois = "C:\\Temp\\";
+        } else if (os.contains("Mac")) {
+            // Mac
+        }
         model = (DefaultTableModel)jTable1.getModel();
         jLabel2.setText(mois);
+        
         
         for(int i=0 ; i< enfants.size(); i++)
         { 
                 Enfant e = (Enfant) enfants.get(i);
+                Double payement = searchPayement(path_mois+"mois-"+annee+".xlsx",Double.parseDouble(e.getNum()));
+                e.setPaye((int)Math.floor(payement));
                 Vector vector = new Vector<>();
                 for(int j=0;j<enfants.size();j++)
                 {
@@ -68,7 +83,8 @@ public class Payement extends javax.swing.JFrame {
                 rowData[i] = model.getValueAt(row, i);
             }
 
-            XSSFRow ligne = rechercheLigne("C:\\Temp\\mois-2023.xlsx" , Double.parseDouble(rowData[0].toString()));   
+            XSSFRow ligne = rechercheLigne(path_mois+"mois-"+annee+".xlsx", Double.parseDouble(rowData[0].toString()));   
+            
             try {
                 updateLigne(ligne, Double.parseDouble(newValue.toString()));
             } catch (InterruptedException ex) {
@@ -130,20 +146,39 @@ public class Payement extends javax.swing.JFrame {
               indice = 24;
             break;
         }
-        
+        System.out.println("indice : " + indice);
+     
+        String filePath = path_mois+"mois-"+annee+".xlsx";
+        int rowIndexToModify = indice; // Indice de la ligne à modifier (commence à 0)
+        Double newValue = valeur;
+
         try {
+            FileInputStream file = new FileInputStream(filePath);
+            Workbook workbook = new XSSFWorkbook(file);
+
+                if (ligne != null) {
+
+                    Cell cellToModify = ligne.getCell(indice); // Modifier la première cellule de la ligne
+                    if (cellToModify != null) {
+                        cellToModify.setCellValue(newValue);
+                    } else {
+                        cellToModify = ligne.createCell(indice);
+                        System.out.println("new value : " + newValue);// Créer une nouvelle cellule si elle n'existe pas
+                        cellToModify.setCellValue(newValue);
+                        
+                    }
+                }
             
-            XSSFSheet dataSheet = null; 
-            FileOutputStream output = new FileOutputStream("C:\\Temp\\mois-2023.xlsx");
-            dataSheet.getRow(ligne.getRowNum()).getCell(indice).setCellValue(valeur);
-            dataSheet.getWorkbook().write(output);
-            output.close();
-            
-        } catch (FileNotFoundException e){
+
+            file.close();
+
+            FileOutputStream outFile = new FileOutputStream(filePath);
+            workbook.write(outFile);
+            outFile.close();
+
+            System.out.println("La ligne a été modifiée avec succès.");
+        } catch (IOException e) {
             e.printStackTrace();
-            
-        } catch(IOException e){
-       
         }
         
     }
@@ -172,6 +207,115 @@ public class Payement extends javax.swing.JFrame {
          System.out.println("Ligne recherché : " + ligneRecherchee.getCell(0).getNumericCellValue());
          return ligneRecherchee;
         
+    }
+    
+    public Double searchPayement(String path,Double idRecherche) throws InterruptedException {
+        XSSFRow row = rechercheLigne(path,idRecherche);
+        Double d = null;
+        
+        switch(jLabel2.getText()) {
+            case "Janvier" :
+        
+                if (row.getCell(13) != null) {
+                    d = row.getCell(13).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+
+            break;
+            
+            case "Février" :
+                if (row.getCell(14) != null) {
+                    d = row.getCell(14).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Mars" :
+                if (row.getCell(15) != null) {
+                    d = row.getCell(15).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Avril" :
+                 if (row.getCell(16) != null) {
+                    d = row.getCell(16).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Mai" :
+                if (row.getCell(17) != null) {
+                    d = row.getCell(17).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Juin" :
+               if (row.getCell(18) != null) {
+                    d = row.getCell(18).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Juillet" :
+                 if (row.getCell(19) != null) {
+                    d = row.getCell(19).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Aout" :
+                if (row.getCell(20) != null) {
+                    d = row.getCell(20).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Septembre" :
+                 if (row.getCell(21) != null) {
+                    d = row.getCell(21).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Octobre" :
+                if (row.getCell(22) != null) {
+                    d = row.getCell(22).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Novembre" :
+                if (row.getCell(23) != null) {
+                    d = row.getCell(23).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+            
+            case "Décembre" :
+               if (row.getCell(24) != null) {
+                    d = row.getCell(24).getNumericCellValue();
+                } else {
+                    d = 0.0;
+                }
+            break;
+           
+        }
+        
+        return d;
+     
     }
     
 
