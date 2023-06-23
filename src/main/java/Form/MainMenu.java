@@ -2,13 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package Form;
+package main.java.Form;
 
 import Entities.Enfant;
 import Entities.Mois;
 import Utile.BeanBDAccess;
 import Utile.FonctionsUtiles;
-import com.sun.media.sound.InvalidFormatException;
 import java.awt.Dialog;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +31,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -72,10 +72,12 @@ public class MainMenu extends javax.swing.JFrame {
         String os = System.getProperty("os.name");
         if (os.contains("Windows")) {
             // Windows
+            System.out.println("Windows");
             file_path = "C:\\Temp\\enfants.xlsx";
             path_mois = "C:\\Temp\\";
         } else if (os.contains("Mac")) {
             // Mac
+            System.out.println("Mac");
         }
         jTable1.getTableHeader().setOpaque(false);
         model = (DefaultTableModel)jTable1.getModel();
@@ -458,9 +460,7 @@ public class MainMenu extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Fichier introuvable", "Erreur", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidFormatException ex) {
             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (org.apache.poi.openxml4j.exceptions.InvalidFormatException ex) {
-             Logger.getLogger(MainMenu.class.getName()).log(Level.SEVERE, null, ex);
-         }
+        } 
 
     }//GEN-LAST:event_jButton3ActionPerformed
 

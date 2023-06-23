@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package Form;
+package main.java.Form;
 
 import Entities.Enfant;
 import java.io.File;
@@ -19,6 +19,8 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -147,8 +149,8 @@ public class Payement extends javax.swing.JFrame {
             break;
         }
         System.out.println("indice : " + indice);
-     
-        String filePath = path_mois+"mois-"+annee+".xlsx";
+
+        String filePath = path_mois + "mois-" + annee + ".xlsx";
         int rowIndexToModify = indice; // Indice de la ligne à modifier (commence à 0)
         Double newValue = valeur;
 
@@ -156,30 +158,32 @@ public class Payement extends javax.swing.JFrame {
             FileInputStream file = new FileInputStream(filePath);
             Workbook workbook = new XSSFWorkbook(file);
 
-                if (ligne != null) {
+            Sheet sheet = workbook.getSheetAt(0);
 
-                    Cell cellToModify = ligne.getCell(indice); // Modifier la première cellule de la ligne
-                    if (cellToModify != null) {
-                        cellToModify.setCellValue(newValue);
-                    } else {
-                        cellToModify = ligne.createCell(indice);
-                        System.out.println("new value : " + newValue);// Créer une nouvelle cellule si elle n'existe pas
-                        cellToModify.setCellValue(newValue);
-                        
-                    }
-                }
+            Row rowToModify = sheet.getRow(indice);
+            System.out.println("rowToModify : " + rowToModify);// Récupérer la ligne à modifier
             
+                Cell cellToModify = rowToModify.getCell(indice); // Modifier la cellule à l'indice spécifié
+                if (cellToModify != null) {
+                    cellToModify.setCellValue(newValue);
+                } else {
+                    cellToModify = rowToModify.createCell(indice);
+                    System.out.println("new value : " + newValue); // Créer une nouvelle cellule si elle n'existe pas
+                    cellToModify.setCellValue(newValue);
+                
+
+                FileOutputStream outFile = new FileOutputStream(filePath);
+                workbook.write(outFile);
+                outFile.close();
+
+                System.out.println("La ligne a été modifiée avec succès.");
+            }
 
             file.close();
-
-            FileOutputStream outFile = new FileOutputStream(filePath);
-            workbook.write(outFile);
-            outFile.close();
-
-            System.out.println("La ligne a été modifiée avec succès.");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         
     }
     
